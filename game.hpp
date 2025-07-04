@@ -20,7 +20,17 @@ class Game
             Villager(VillagerName::MARIA, Location::BARN, Location::CAMP)
         };
         std::array<std::unique_ptr<Monster> , 2> monsters; // 0: Dracula  1:Invisible Man
-        std::array<Item , 35> items = {
+        std::array<Item , 70> items = {
+            Item("Flower", ItemType::YELLOW, 2, Location::DOCKS),
+            Item("Tarot Deck", ItemType::YELLOW, 3, Location::CAMP),
+            Item("Garlic", ItemType::YELLOW, 2, Location::INN),
+            Item("Mirrred Box", ItemType::YELLOW, 3, Location::MANSION),
+            Item("Stake", ItemType::YELLOW, 3, Location::ABBEY),
+            Item("Scroll of Thoth", ItemType::YELLOW, 4, Location::MUSEUM),
+            Item("Violin", ItemType::YELLOW, 3, Location::CAMP),
+            Item("Tablet", ItemType::YELLOW, 3, Location::MUSEUM),
+            Item("Wilfsbane", ItemType::YELLOW, 4, Location::CAMP),
+            Item("Charm", ItemType::YELLOW, 4, Location::CAMP),
             Item("Flower", ItemType::YELLOW, 2, Location::DOCKS),
             Item("Tarot Deck", ItemType::YELLOW, 3, Location::CAMP),
             Item("Garlic", ItemType::YELLOW, 2, Location::INN),
@@ -44,7 +54,32 @@ class Game
             Item("Pistol", ItemType::RED, 6, Location::PRECINCT),
             Item("Bear Trap", ItemType::RED, 4, Location::SHOP),
             Item("Speargun", ItemType::RED, 4, Location::INSTITUTE),
+            Item("Dart", ItemType::RED, 2, Location::INN),
+            Item("Fire Poker", ItemType::RED, 3, Location::MANSION),
+            Item("Rapier", ItemType::RED, 5, Location::THEATRE),
+            Item("Shovel", ItemType::RED, 2, Location::GRAVEYARD),
+            Item("Torch", ItemType::RED, 5, Location::BARN),
+            Item("Pitchfork", ItemType::RED, 4, Location::BARN),
+            Item("Rifle", ItemType::RED, 6, Location::BARN),
+            Item("Silver Cane", ItemType::RED, 6, Location::SHOP),
+            Item("Knife", ItemType::RED, 3, Location::DOCKS),
+            Item("Pistol", ItemType::RED, 6, Location::PRECINCT),
+            Item("Bear Trap", ItemType::RED, 4, Location::SHOP),
+            Item("Speargun", ItemType::RED, 4, Location::INSTITUTE),
             
+            Item("Anatomy Text", ItemType::BLUE, 1, Location::INSTITUTE),
+            Item("Centrifuge", ItemType::BLUE, 1, Location::LABORATORY),
+            Item("Kite", ItemType::BLUE, 1, Location::TOWER),
+            Item("Research", ItemType::BLUE, 2, Location::TOWER),
+            Item("Telescope", ItemType::BLUE, 2, Location::MANSION),
+            Item("Searchlight", ItemType::BLUE, 2, Location::PRECINCT),
+            Item("Experiment", ItemType::BLUE, 2, Location::LABORATORY),
+            Item("Analysis", ItemType::BLUE, 2, Location::INSTITUTE),
+            Item("Rotenone", ItemType::BLUE, 3, Location::INSTITUTE),
+            Item("Casmic Ray Diffuser", ItemType::BLUE, 3, Location::TOWER),
+            Item("Nebularium", ItemType::BLUE, 3, Location::TOWER),
+            Item("Monocane Mixture", ItemType::BLUE, 3, Location::INN),
+            Item("Fossil", ItemType::BLUE, 3, Location::CAMP),
             Item("Anatomy Text", ItemType::BLUE, 1, Location::INSTITUTE),
             Item("Centrifuge", ItemType::BLUE, 1, Location::LABORATORY),
             Item("Kite", ItemType::BLUE, 1, Location::TOWER),
@@ -94,18 +129,17 @@ class Game
             unsigned attackIcons{0};
             unsigned powerIcons{0};
         };
-
+        
         void placeRandomItems(int count);
         void doEvent(MonsterCardName);
         void doMonsterStrikes(const MonsterCard& card);
         DiceResult throwDice(int numberOfDice) const noexcept;
         void monsterPhase();
         void heroPhase();
-        int getIntNumber(std::string output) const noexcept;
         void initMonsterCards();
         void initMonsters();
         void initHeros();
-
+        // void ClearScreen();
         void Visit_from_the_Detective(Monster* monster);
         void Break_of_Dawn();
         void Overstock();
@@ -118,6 +152,7 @@ class Game
     public:
         Game();
         void run();
+        static int getIntNumber(std::string output) noexcept;
 };
 
 #endif 

@@ -5,7 +5,16 @@ int main(){
 
     Game game;
 
-    game.run();
+    try
+    {
+        game.run();
+    }
+    catch(...)
+    {
+        std::cerr << "Error!!!" << '\n';
+    }
+    
+    
 
     return 0;
 }

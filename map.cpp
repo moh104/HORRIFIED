@@ -78,7 +78,7 @@ int Map::getHorroLevel() noexcept
     return levelOfHorror;
 }
 
-void Map::draw(const array<Item , 35>& items, const array<unique_ptr<Monster> , 2>& monsters , const array<Villager , 7>& villagers , const array<unique_ptr<Hero> , 2>& heros) noexcept
+void Map::draw(const array<Item , 70>& items, const array<unique_ptr<Monster> , 2>& monsters , const array<Villager , 7>& villagers , const array<unique_ptr<Hero> , 2>& heros) noexcept
 {
     cout << "+-----------------------------------------------------------+-------------------------------------------------------+" << '\n'
          << "|                                                           |                                                       |" << '\n'
@@ -99,8 +99,8 @@ void Map::draw(const array<Item , 35>& items, const array<unique_ptr<Monster> , 
         "|                                                           |    ",
         "+-----------------------------------------------------------+-------------------------------------------------------+",
         "|                      ACTION MENU                          |                        VILLAGERS                      |",
-        "|   [M]ove  |   [G]uide |   [P]ick Up   |   [A]dvance       |    ",
-        "|   [D]efeat    |   [U]se Perk  |   [H]elp  |   [Q]uit      |    "
+        "|    Move   |    Guide  |    Pick Up    |    Advance        |    ",
+        "|    Defeat     |    Use Perk   |    Help   |    Quit       |    "
     };
 
     size_t i = 0;
@@ -300,7 +300,7 @@ string Map::locationToString(Location i_location) noexcept
     }
 }
 
-array<vector<string> , 4> Map::getLocationBelongings(const array<Item , 35>& items, const array<unique_ptr<Monster> , 2>& monsters , const array<Villager , 7>& villagers , const array<unique_ptr<Hero> , 2>& heros , Location location) noexcept
+array<vector<string> , 4> Map::getLocationBelongings(const array<Item , 70>& items, const array<unique_ptr<Monster> , 2>& monsters , const array<Villager , 7>& villagers , const array<unique_ptr<Hero> , 2>& heros , Location location) noexcept
 {
     array<vector<string> , 4> belongings;
     for (auto const& item : items)
@@ -335,7 +335,7 @@ array<vector<string> , 4> Map::getLocationBelongings(const array<Item , 35>& ite
     return belongings;
 }
 
-void Map::printLocationBelongings(const array<Item , 35>& items, const array<unique_ptr<Monster> , 2>& monsters , const array<Villager , 7>& villagers , const array<unique_ptr<Hero> , 2>& heros , Location location) noexcept
+void Map::printLocationBelongings(const array<Item , 70>& items, const array<unique_ptr<Monster> , 2>& monsters , const array<Villager , 7>& villagers , const array<unique_ptr<Hero> , 2>& heros , Location location) noexcept
 {
     auto belongings = getLocationBelongings(items , monsters , villagers , heros , location);
     for (size_t i = 0 ; i < belongings[0].size() || i < belongings[1].size() || i < belongings[2].size() || i < belongings[3].size() ; ++i)
@@ -385,7 +385,7 @@ void Map::printLocationBelongings(const array<Item , 35>& items, const array<uni
     }
 }
 
-Location Map::findLocationWithMostItems(const std::array<Item,35>& items) noexcept
+Location Map::findLocationWithMostItems(const std::array<Item,70>& items) noexcept
 {
     std::array<int , 19> counts{};
     for (auto const& item : items)

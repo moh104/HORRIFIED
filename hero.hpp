@@ -38,7 +38,7 @@ class Hero
         Location getLocation() const noexcept;
         void move(Location newLocation) noexcept;
         void guide(const std::vector<Villager*>&);
-        void pickUpItem(const std::array<Item* , 35>&);
+        void pickUpItem(const std::array<Item* , 70>&);
         void advanceTask(Monster*);
         void defeatMonster(Monster*);
         std::vector<std::string> getItems() const;

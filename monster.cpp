@@ -41,15 +41,6 @@ void Monster::setLocation (Location i_location) noexcept
     location = i_location;
 }
 
-void Monster::setRequiredItemStrength(int strength)
-{
-    if (strength < 0 || strength > 218)
-    {
-        throw invalid_argument("The total power of the items is invalid");
-    }
-    requiredItemStrength = strength;
-}
-
 void Monster::movement (int moveCount , Location target) noexcept
 {
     int distance = Map::getDistance(location , target);
@@ -135,6 +126,15 @@ void Monster::receiveDefeat(Location heroLocation , const std::vector<Item>& ite
     }
 
     kill();
+}
+
+void Monster::setRequiredItemStrength(int strength)
+{
+    if (strength < 0 || strength > 218)
+    {
+        throw invalid_argument("The total power of the items is invalid");
+    }
+    requiredItemStrength = strength;
 }
 
 unsigned int Monster::numOfPartsSolved() const noexcept

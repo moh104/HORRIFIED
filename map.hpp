@@ -42,8 +42,8 @@ class Map
         static std::vector<Location> getNeighboringPlaces(Location i_location) noexcept;
         static void increaseHorror();
         static int getHorroLevel() noexcept;
-        static void draw(const std::array<Item , 35>& items , const std::array<std::unique_ptr<Monster> , 2>& monsters , const std::array<Villager , 7>& villagers , const std::array<std::unique_ptr<Hero> , 2>& heros) noexcept;
-        static Location findLocationWithMostItems(const std::array<Item,35>& items) noexcept;
+        static void draw(const std::array<Item , 70>& items , const std::array<std::unique_ptr<Monster> , 2>& monsters , const std::array<Villager , 7>& villagers , const std::array<std::unique_ptr<Hero> , 2>& heros) noexcept;
+        static Location findLocationWithMostItems(const std::array<Item,70>& items) noexcept;
         static std::string locationToString(Location i_location) noexcept;
 
     private:
@@ -72,8 +72,8 @@ class Map
 
         static int levelOfHorror;
 
-        static std::array<std::vector<std::string> , 4> getLocationBelongings(const std::array<Item , 35>& items, const std::array<std::unique_ptr<Monster> , 2>& monsters , const std::array<Villager , 7>& villagers , const std::array<std::unique_ptr<Hero> , 2>& heros , Location location) noexcept;
-        static void printLocationBelongings(const std::array<Item , 35>& items, const std::array<std::unique_ptr<Monster> , 2>& monsters , const std::array<Villager , 7>& villagers , const std::array<std::unique_ptr<Hero> , 2>& heros , Location location) noexcept;
+        static std::array<std::vector<std::string> , 4> getLocationBelongings(const std::array<Item , 70>& items, const std::array<std::unique_ptr<Monster> , 2>& monsters , const std::array<Villager , 7>& villagers , const std::array<std::unique_ptr<Hero> , 2>& heros , Location location) noexcept;
+        static void printLocationBelongings(const std::array<Item , 70>& items, const std::array<std::unique_ptr<Monster> , 2>& monsters , const std::array<Villager , 7>& villagers , const std::array<std::unique_ptr<Hero> , 2>& heros , Location location) noexcept;
 };
 
 #endif

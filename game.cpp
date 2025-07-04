@@ -426,7 +426,7 @@ void Game::run()
     }
 }
 
-int Game::getIntNumber(string output) const noexcept
+int Game::getIntNumber(string output) noexcept
 {
     string input;
     int value;
@@ -716,7 +716,7 @@ void Game::heroPhase() {
 
         else if (action == "PickUp")
         {
-            std::array <Item* , 35> All ;
+            std::array <Item* , 70> All ;
             for (size_t i = 0; i < All.size(); ++i) {
                 All[i] = &items[i];
             }
