@@ -99,14 +99,12 @@ class Game
         void doEvent(MonsterCardName);
         void doMonsterStrikes(const MonsterCard& card);
         DiceResult throwDice(int numberOfDice) const noexcept;
-        void heroPhase();
+        void monsterPhase();
         int getIntNumber(std::string output) const noexcept;
-        void refreshDiscardedItems();
         void initMonsterCards();
         void initMonsters();
         void initHeros();
 
-        
         void Visit_from_the_Detective(Monster* monster);
         void Break_of_Dawn();
         void Overstock();
@@ -114,6 +112,7 @@ class Game
         void Repel( Monster* dracula , Monster* invisibleman );
         void Hurry(Hero* hero);
         void displayHelp();
+        void refreshDiscardedItems();
 
     public:
         Game();

@@ -49,33 +49,33 @@ void Game::initMonsters()
     monsters[1] = make_unique<InvisibleMan>(Location::INSTITUTE);
 }
 
-void Game::placeRandomItems(int count)
+void Game::monsterPhase()
 {
-    if (count < 0)
-    {
-        throw invalid_argument("The number of new items cannot be negative");
-    }
+    cout<<"\n--- Monster Phase ---\n";
 
-    if (count > outGameItems)
+    size_t index = rand() % monsterCards.size();
+    MonsterCard card = monsterCards[index];
+    std::swap(monsterCards[index], monsterCards.back());
+    monsterCards.pop_back();
+
+    cout << "Monster Card " << monsterCardToString(card.getName()) << " was executed\n";
+
+    try
     {
-        refreshDiscardedItems();
-        if (count > outGameItems)
-        {
-            throw logic_error("There are not enough items outside the game");
-        }
+        placeRandomItems(card.getNewItems());
+        doEvent(card.getName());
+        doMonsterStrikes(card);
     }
-    int numberOfItems = static_cast<int>(items.size());
-    int placed = 0;
-    while (placed < count)
+    catch (const invalid_argument& e)
     {
-        Item& item = items[rand() % numberOfItems];
-        if (item.getItemStatus() == ItemStatus::OUT_GAME)
-        {
-            item.activate();
-            ++placed;
-            --outGameItems;
-        }
+        cerr << "(ERROR) " << e.what() << '\n';
     }
+    catch (const logic_error& e)
+    {
+        cerr << "(ERROR) " << e.what() << '\n';
+    }
+    
+
 }
 
 void Game::doEvent(MonsterCardName cardName)
@@ -296,76 +296,33 @@ Game::DiceResult Game::throwDice(int numberOfDice) const noexcept
     return result;
 }
 
-int Game::getIntNumber(string output) const noexcept
+void Game::placeRandomItems(int count)
 {
-    string input;
-    int value;
-    
-
-    while (true)
+    if (count < 0)
     {
-        cout << output;
-        getline(cin , input);
-        try
-        {
-            size_t pos = 0;
-            value = stoi(input , &pos);
+        throw invalid_argument("The number of new items cannot be negative");
+    }
 
-            if (pos == input.size())
-            {
-                return value;
-            }
-            else
-            {
-                cout << "Invalid input! Please enter only a integer number without extra characters.\n";
-            }
-        }
-        catch(...)
+    if (count > outGameItems)
+    {
+        refreshDiscardedItems();
+        if (count > outGameItems)
         {
-            cout << "Invalid input! Please enter a valid integer number.\n";
+            throw logic_error("There are not enough items outside the game");
         }
     }
-}
-
-void Game::refreshDiscardedItems()
-{
-    for (auto& item : items)
+    int numberOfItems = static_cast<int>(items.size());
+    int placed = 0;
+    while (placed < count)
     {
-        if (item.getItemStatus() == ItemStatus::DISCARDED)
+        Item& item = items[rand() % numberOfItems];
+        if (item.getItemStatus() == ItemStatus::OUT_GAME)
         {
-            item.setItemStatus(ItemStatus::OUT_GAME);
-            ++outGameItems;
+            item.activate();
+            ++placed;
+            --outGameItems;
         }
     }
-}
-
-void Game::monsterPhase()
-{
-    cout<<"\n--- Monster Phase ---\n";
-
-    size_t index = rand() % monsterCards.size();
-    MonsterCard card = monsterCards[index];
-    std::swap(monsterCards[index], monsterCards.back());
-    monsterCards.pop_back();
-
-    cout << "Monster Card " << monsterCardToString(card.getName()) << " was executed\n";
-
-    try
-    {
-        placeRandomItems(card.getNewItems());
-        doEvent(card.getName());
-        doMonsterStrikes(card);
-    }
-    catch (const invalid_argument& e)
-    {
-        cerr << "(ERROR) " << e.what() << '\n';
-    }
-    catch (const logic_error& e)
-    {
-        cerr << "(ERROR) " << e.what() << '\n';
-    }
-    
-
 }
 
 void Game::run()
@@ -467,4 +424,220 @@ void Game::run()
         current = 1 - current;
         currentHero = heroes[current].get();
     }
+}
+
+int Game::getIntNumber(string output) const noexcept
+{
+    string input;
+    int value;
+    
+
+    while (true)
+    {
+        cout << output;
+        getline(cin , input);
+        try
+        {
+            size_t pos = 0;
+            value = stoi(input , &pos);
+
+            if (pos == input.size())
+            {
+                return value;
+            }
+            else
+            {
+                cout << "Invalid input! Please enter only a integer number without extra characters.\n";
+            }
+        }
+        catch(...)
+        {
+            cout << "Invalid input! Please enter a valid integer number.\n";
+        }
+    }
+}
+
+void Game::refreshDiscardedItems()
+{
+    for (auto& item : items)
+    {
+        if (item.getItemStatus() == ItemStatus::DISCARDED)
+        {
+            item.setItemStatus(ItemStatus::OUT_GAME);
+            ++outGameItems;
+        }
+    }
+}
+
+// void Game::ClearScreen() {
+//     #ifdef _WIN32
+//         system("cls"); 
+//     #else
+//         system("clear");  
+//     #endif
+// }
+
+void Game::Visit_from_the_Detective(Monster* monster)
+{
+    if (monster->getName() == MonsterName::INVISIBLEMAN)
+    {
+        std::cout << "Location that monster can go :" << std::endl;
+        std::cout << "1.DOCKS\n2.CAMP\n3.INN\n4.MANSION\n5.ABBEY\n6.MUSEUM\n7.THEATRE\n"
+                  << "8.GRAVEYARD\n9.BARN\n10.SHOP\n11.PRECINCT\n12.INSTITUTE\n13.LABORATORY\n"
+                  << "14.TOWER\n15.CAVE\n16.DUNGEON\n17.CRYPT\n18.CHURCH\n19.HOSPITAL\n";
+        std::cout << "Enter where the monster you want to go : ";
+        int loc;
+        std::cin >> loc;
+        monster->setLocation(static_cast<Location> ( loc - 1));
+    }
+    else
+    {
+        return;
+    }
+    
+}
+
+void Game::Break_of_Dawn()
+{
+    skipNextMonsterPhase = true;
+}
+
+void Game::Overstock()
+{
+    placeRandomItems(2);
+}
+
+void Game::Late_into_the_Night( Hero* hero)
+{
+    int a = hero->getActionsLeft();
+    a +=2 ;
+    hero->setActionsLeft(a) ;
+}
+
+void Game::Repel( Monster* dracula , Monster* invisibleman )
+{
+    std::vector <Location> nearMonster = Map::getNeighboringPlaces(dracula->getLocation());
+    std::cout << "Location that Dracula can go :" << std::endl;
+    int a = 1;
+    for (size_t i = 0; i < nearMonster.size(); i++)
+    {
+        std::cout << a << ". " << Map::locationToString(nearMonster[i]) << std::endl ;
+        a++;
+    }
+    std::cout << "Enter where the monster you want to go : ";
+    int loc;
+    std::cin >> loc;
+    dracula->movement(1 , nearMonster[loc-1]);
+    nearMonster.clear();
+
+    nearMonster = Map::getNeighboringPlaces(dracula->getLocation());
+    std::cout << "Location that Dracula can go :" << std::endl;
+    a = 1;
+    for (size_t i = 0; i < nearMonster.size(); i++)
+    {
+        std::cout << a << ". " << Map::locationToString(nearMonster[i]) << std::endl ;
+        a++;
+    }
+    std::cout << "Enter where the monster you want to go : ";
+    std::cin >> loc;
+    dracula->movement(1 , nearMonster[loc-1]);
+    nearMonster.clear();
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    nearMonster = Map::getNeighboringPlaces(invisibleman->getLocation());
+    std::cout << "Location that Invisible Man can go :" << std::endl;
+    a = 1;
+    for (size_t i = 0; i < nearMonster.size(); i++)
+    {
+        std::cout << a << ". " << Map::locationToString(nearMonster[i]) << std::endl ;
+        a++;
+    }
+    std::cout << "Enter where the monster you want to go : ";
+    std::cin >> loc;
+    invisibleman->movement(1 , nearMonster[loc-1]);
+    nearMonster.clear();
+
+    nearMonster = Map::getNeighboringPlaces(invisibleman->getLocation());
+    std::cout << "Location that Invisible Man can go :" << std::endl;
+    a = 1;
+    for (size_t i = 0; i < nearMonster.size(); i++)
+    {
+        std::cout << a << ". " << Map::locationToString(nearMonster[i]) << std::endl ;
+        a++;
+    }
+    std::cout << "Enter where the monster you want to go : ";
+    std::cin >> loc;
+    invisibleman->movement(1 , nearMonster[loc-1]);
+    nearMonster.clear();
+}
+
+void Game::Hurry(Hero* hero)
+{
+    std::vector <Location> nearHero = Map::getNeighboringPlaces(hero->getLocation());
+    std::cout << "Location that hero can go :" << std::endl;
+    int a = 1;
+    for (size_t i = 0; i < nearHero.size(); i++)
+    {
+        std::cout << a << ". " << Map::locationToString(nearHero[i]) << std::endl ;
+        a++;
+    }
+    std::cout << "Enter where the hero you want to go : ";
+    int loc;
+    std::cin >> loc;
+    hero->move(nearHero[loc-1]);
+
+    nearHero = Map::getNeighboringPlaces(hero->getLocation());
+    std::cout << "Location that hero can go :" << std::endl;
+    a = 1;
+    for (size_t i = 0; i < nearHero.size(); i++)
+    {
+        std::cout << a << ". " << Map::locationToString(nearHero[i]) << std::endl ;
+        a++;
+    }
+    std::cout << "Enter where the hero you want to go : ";
+    std::cin >> loc;
+    hero->move(nearHero[loc-1]);
+}
+
+void Game::displayHelp() {
+    std::cout << "\nAvailable Actions:\n"
+        << "1. Move - Move to adjacent location\n"
+        << "2. Guide - Move a villager\n"
+        << "3. PickUp - Collect items\n"
+        << "4. Advance - Work on monster task\n"
+        << "5. Defeat - Attempt to defeat monster\n"
+        << "6. Perk - Use perk card\n"
+        << "7. Status - Show game state\n"
+        << "8. End - Finish turn\n"
+        << "9. Help - Show this message\n"
+        << "0. Quit - Exit game\n";
+        std::cout <<"Enter the action you want to help (Number) : ";
+        int num;
+        std::cin >> num;
+        switch (num)
+        {
+        case 1:
+           std::cout << "Move to adjacent location\n";
+        case 2:
+           std::cout << "Move a villager\n";
+        case 3:
+           std::cout << "Collect items\n";
+        case 4:
+           std::cout << "Work on monster task\n";
+        case 5:
+           std::cout << "Attempt to defeat monster\n";
+        case 6:
+           std::cout << "Use perk card\n";
+        case 7:
+           std::cout << "Show game state\n";
+        case 8:
+           std::cout << "Finish turn\n";
+        case 9:
+           std::cout << "Show this message\n";
+        case 0:
+           std::cout << "Exit game";
+         
+        default:
+           break;
+        }
 }
