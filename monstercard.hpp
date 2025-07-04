@@ -32,6 +32,12 @@ class MonsterCard
 
     public:
         MonsterCard(MonsterCardName i_name , int i_quantity , int i_newItems , int i_strikeMove , int i_strikeDice , std::vector<MonsterName> strikeOrder);
+
+        void setQuantity(int i_quantity);
+        void setNewItems(int i_newItems);
+        void setStrikeMove(int i_strikeMove);
+        void setStrikeDice(int i_strikeDice);
+        void setStrikeOrder(std::vector<MonsterName> order);
 };
 
 #endif
