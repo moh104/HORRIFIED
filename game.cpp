@@ -338,3 +338,133 @@ void Game::refreshDiscardedItems()
         }
     }
 }
+
+void Game::monsterPhase()
+{
+    cout<<"\n--- Monster Phase ---\n";
+
+    size_t index = rand() % monsterCards.size();
+    MonsterCard card = monsterCards[index];
+    std::swap(monsterCards[index], monsterCards.back());
+    monsterCards.pop_back();
+
+    cout << "Monster Card " << monsterCardToString(card.getName()) << " was executed\n";
+
+    try
+    {
+        placeRandomItems(card.getNewItems());
+        doEvent(card.getName());
+        doMonsterStrikes(card);
+    }
+    catch (const invalid_argument& e)
+    {
+        cerr << "(ERROR) " << e.what() << '\n';
+    }
+    catch (const logic_error& e)
+    {
+        cerr << "(ERROR) " << e.what() << '\n';
+    }
+    
+
+}
+
+void Game::run()
+{
+    size_t current;
+    array<string , 2> playerNames;
+    while (true)
+    {
+        cout << "Player 1 Enter your name: ";
+        getline(cin, playerNames[0]);
+        cout << "Player 2 Enter your name: ";
+        getline(cin, playerNames[1]);
+        if (playerNames[1] == playerNames[0])
+        {
+            cerr << "The names of the players cannot be the same" << endl;
+            continue;
+        }
+        cout << playerNames[0];
+        int time0 = getIntNumber(", how many days ago did you eat garlic? ");
+        cout << playerNames[1];
+        int time1 = getIntNumber(", how many days ago did you eat garlic? ");
+        if (time0 < 0 || time1 < 0)
+        {
+            cerr << "Duration cannot be negative" << endl;
+            continue;
+        }
+        current = (time0 < time1 ? 0 : 1);
+        break;
+    }
+    while (true)
+    {
+        cout << playerNames[current] << ", Choose your hero:\n"
+                << "1) " << heroes[0]->heroNameToString(heroes[0]->getName()) << '\n'
+                << "2) " << heroes[1]->heroNameToString(heroes[1]->getName()) << '\n';
+        int choice = getIntNumber("");
+        if (choice != 1 && choice != 2)
+        {
+            cerr << "Invalid choice entered, please try again\n";
+            continue;
+        }
+        try
+        {
+            heroes[choice - 1]->setOwner(playerNames[current]);
+            heroes[1 - (choice - 1)]->setOwner(playerNames[1 - current]);
+        }
+        catch (const invalid_argument& e)
+        {
+            cerr << "(ERROR) " << e.what();
+            continue;
+        }
+        currentHero = heroes[choice - 1].get();
+        break;
+    }
+
+    try
+    {
+        placeRandomItems(12);
+    }
+    catch (const invalid_argument& e)
+    {
+        cerr << "(ERROR) " << e.what() << '\n';
+    }
+    catch (const logic_error& e)
+    {
+        cerr << "(ERROR) " << e.what() << '\n';
+    }
+    
+
+    while (true)
+    {
+        cout << "\n===== Play " << currentHero->getOwner() << ",  it's turn (" << currentHero->heroNameToString(currentHero->getName()) << ") =====\n";
+        heroPhase();
+        if (!monsters[0]->isActive() && !monsters[1]->isActive())
+        {
+            std::cout << "\n HEROES WIN! All monsters defeated.\n";
+            return;
+        }
+
+        if (skipNextMonsterPhase)
+        {
+            cout << "[Monster Phase skipped]\n";
+            skipNextMonsterPhase = false;
+        }
+        else
+        {
+            monsterPhase();
+        }
+        if (monsterCards.empty())
+        {
+            cout << "\n MONSTERS WIN! No monster cards left.\n";
+            return;
+        }
+        if (Map::getHorroLevel() >= 5)
+        {
+            cout << "\nMONSTERS WIN! horror reached 5.\n";
+            return;
+        }
+
+        current = 1 - current;
+        currentHero = heroes[current].get();
+    }
+}
