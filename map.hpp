@@ -36,6 +36,15 @@ enum class Location {
 
 class Map
 {
+    public:
+        static int getDistance(Location origin, Location destination) noexcept;
+        static std::pair<Hero* , Villager*> findNearestTarget (Location currentLocation , const std::array<Villager , 7>& villagers , const std::array<std::unique_ptr<Hero> , 2>& heroes={}) noexcept;
+        static std::vector<Location> getNeighboringPlaces(Location i_location) noexcept;
+        static void increaseHorror();
+        static int getHorroLevel() noexcept;
+        static Location findLocationWithMostItems(const std::array<Item,35>& items) noexcept;
+        static std::string locationToString(Location i_location) noexcept;
+
     private:
         static constexpr std::array<std::array<int , 19> , 19> distances = {
                             //DOCKS CAMP INN MANSION ABBEY MUSEUM THEATRE GRAVEYARD BARN SHOP PRECINCT INSTITUTE LABORATORY TOWER CAVE DUNGEON CRYPT CHURCH HOSPITAL
