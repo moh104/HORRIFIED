@@ -599,6 +599,247 @@ void Game::Hurry(Hero* hero)
     hero->move(nearHero[loc-1]);
 }
 
+void Game::heroPhase() {
+
+    
+    while (currentHero->getActionsLeft() > 0) {
+        // ClearScreen();
+        Map::draw(items , monsters , villagers , heroes);
+        std::string action;
+        std::cout << "Actions:\nMove    Guide    PickUp    Advance    Defeat    Perk    Help    Quit\n";
+        std::cout << "Choose action for " << currentHero->heroNameToString(currentHero->getName()) << ": ";
+        std::cin >> action;
+
+        if (action == "Move") {
+            // ClearScreen();
+            std::cout << "Do you want to move villager with hero?[Y/N]";
+            std::string ans;
+            std::cin >> ans;
+            if (ans == "N")
+            {
+                std::vector <Location> nearlocations = Map::getNeighboringPlaces(currentHero->getLocation());
+                std::cout << "There is the locations you can go :" << std::endl;
+                int a = 1;
+                for (size_t i = 0 ; i < nearlocations.size() ; ++i){
+                    std::cout << a << ". " << Map::locationToString(nearlocations[i]) << std::endl; 
+                    a++;
+                }
+                int newLocation;
+                newLocation = getIntNumber("Enter location to move to: ");
+                // std::cout << "Enter location to move to: ";
+                // std::cin >> newLocation;
+                
+                
+                if (newLocation > static_cast<int>(nearlocations.size()))
+                {
+                    std::cout << "Enter a correct location to move to: ";
+                    std::cin >> newLocation;
+                }
+
+                currentHero->move(nearlocations[newLocation - 1]);
+            }
+
+            if (ans == "Y")
+            {
+                std::vector <Location> nearlocations = Map::getNeighboringPlaces(currentHero->getLocation());
+                std::cout << "There is the locations you can go :" << std::endl;
+                int a = 1;
+                for (size_t i = 0 ; i < nearlocations.size() ; i ++){
+                    std::cout << a << ". " << Map::locationToString(nearlocations[i]) << std::endl; 
+                    a++;
+                }
+                int newLocation;
+                newLocation = getIntNumber("Enter location to move to: ");
+                // int newLocation;
+                // std::cout << "Enter location to move to: ";
+                // std::cin >> newLocation;
+                
+                if (newLocation > static_cast<int>(nearlocations.size()))
+                {
+                    std::cout << "Enter a correct location to move to: ";
+                    std::cin >> newLocation;
+                }
+                std::array <Villager* , 7> all ;
+                for (size_t i = 0; i < villagers.size(); ++i) {
+                    all[i] = &villagers[i];
+                }
+                for (size_t i = 0; i < all.size(); i++)
+                {
+                    if (all[i]->isActive() && all[i]->getLocation() == currentHero->getLocation())
+                    {
+                        all[i]->setLocation(nearlocations[newLocation - 1]);
+                        std::cout << Map::locationToString(all[i]->getLocation()) << std::endl;
+                        if (all[i]->getLocation() == all[i]->getSafeLocation())
+                        {
+                            std::array<Perk , 20 > P = AllPerks;
+                            time_t randomPerk = rand() % 20 + 1;
+                            currentHero->HavePerkCard(P[randomPerk]);
+                            all[i]->DisActive();
+                        }
+                        
+                    }
+                }
+                currentHero->move(nearlocations[newLocation - 1]);
+            }
+            
+        }
+
+        else if (action == "Guide")
+        {
+            // ClearScreen();
+            std::array <Villager* , 7> all ;
+            for (size_t i = 0; i < villagers.size(); ++i) {
+                all[i] = &villagers[i];
+            }
+            std::vector < Villager* > near;
+            for (size_t i = 0; i < all.size(); i++)
+            {
+                if (all[i]->isActive())
+                {
+                    near.push_back(all[i]);
+                }
+            }
+            currentHero->guide( near);
+            for (size_t i = 0; i < all.size(); i++)
+            {
+                if (all[i]->getLocation() == all[i]->getSafeLocation() )
+                {
+                    std::array<Perk , 20 > P = AllPerks;
+                    time_t randomPerk = rand() % 20 + 1;
+                    currentHero->HavePerkCard(P[randomPerk]);
+                    all[i]->DisActive();
+                }
+                
+            }
+            
+        }
+
+        else if (action == "PickUp")
+        {
+            std::array <Item* , 35> All ;
+            for (size_t i = 0; i < All.size(); ++i) {
+                All[i] = &items[i];
+            }
+            currentHero->pickUpItem( All );
+        }
+
+        else if (action == "Advance")
+        {
+            // ClearScreen();
+            if (currentHero->getLocation() == Location::CAVE || currentHero->getLocation() == Location::GRAVEYARD || currentHero->getLocation() == Location::CRYPT || currentHero->getLocation() == Location::DUNGEON)
+            {
+                currentHero->advanceTask(monsters[0].get());
+            }
+            if (currentHero->getLocation() == Location::PRECINCT)
+            {
+                currentHero->advanceTask(monsters[1].get());
+            }
+            
+        }
+
+        else if (action == "Defeat")
+        {
+            // ClearScreen();
+            if (currentHero->getLocation() == monsters[0]->getLocation())
+            {
+                currentHero->defeatMonster(monsters[0].get());
+            }
+            if (currentHero->getLocation() == monsters[1]->getLocation())
+            {
+                currentHero->defeatMonster(monsters[1].get());
+            }
+            
+        }
+        
+        else if(action == "Perk"){
+            // ClearScreen();
+            std::vector<Perk>perkCards = currentHero->GetPerk();
+            if (!perkCards.empty()) {
+
+            std::cout << "You can use this perks:" << std::endl;
+            int a = 1;
+            for (Perk& perk : perkCards)
+            {
+                std::cout << a << ". " << perk.NameToString(perk.getName()) << std::endl;
+                a++;
+            }
+            int choise;
+            choise = getIntNumber("Enter the perk you want to use :");
+
+            // std::cout << "Enter the perk you want to use :" ;
+            //std::cin >> choise;
+
+            if (choise > static_cast<int>(perkCards.size()))
+            {
+                std::cout << "Enter the correct choice :" ;
+                std::cin >> choise;
+            }
+
+            if(perkCards[choise-1].getName() == Name::Late_into_the_Night){
+                Late_into_the_Night(currentHero);
+                perkCards.erase(perkCards.begin() + choise - 1);
+            }
+            else if(perkCards[choise-1].getName() == Name::Break_of_Dawn){
+                Break_of_Dawn();
+                perkCards.erase(perkCards.begin() + choise - 1);
+            }
+            else if(perkCards[choise-1].getName() == Name::Overstock){
+                Overstock();
+                perkCards.erase(perkCards.begin() + choise - 1);
+            }
+            else if(perkCards[choise-1].getName() == Name::Visit_from_the_Detective){
+                Visit_from_the_Detective(monsters[1].get());
+                perkCards.erase(perkCards.begin() + choise - 1);
+            }
+            else if(perkCards[choise-1].getName() == Name::Repel){
+                Repel(monsters[0].get() , monsters[1].get());
+                perkCards.erase(perkCards.begin() + choise - 1);
+            }
+            else if(perkCards[choise-1].getName() == Name::Hurry){
+                Hurry(currentHero);
+                perkCards.erase(perkCards.begin() + choise - 1);
+            }
+
+
+            } 
+            else {
+                std::cout << currentHero->heroNameToString(currentHero->getName()) << " has no perk cards to use!" << std::endl;
+            }
+            
+             
+        }
+
+        else if (action == "Help")
+        {
+            // ClearScreen();
+            displayHelp();
+        }
+
+        else if(action == "Quit"){
+            // ClearScreen();
+            return;
+        }
+
+        else{
+            std::cout << "Enter correct action :";
+        }
+        
+        if (heroes[0]->getActionsLeft() == 0)
+        {
+            heroes[0]->setActionsLeft(4);
+            return;
+        }
+        
+        if (heroes[1]->getActionsLeft() == 0)
+        {
+            heroes[1]->setActionsLeft(5);
+            return;
+        }
+
+    }
+}
+
+
 void Game::displayHelp() {
     std::cout << "\nAvailable Actions:\n"
         << "1. Move - Move to adjacent location\n"

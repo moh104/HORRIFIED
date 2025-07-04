@@ -100,6 +100,7 @@ class Game
         void doMonsterStrikes(const MonsterCard& card);
         DiceResult throwDice(int numberOfDice) const noexcept;
         void monsterPhase();
+        void heroPhase();
         int getIntNumber(std::string output) const noexcept;
         void initMonsterCards();
         void initMonsters();
