@@ -78,6 +78,162 @@ int Map::getHorroLevel() noexcept
     return levelOfHorror;
 }
 
+void Map::draw(const array<Item , 35>& items, const array<unique_ptr<Monster> , 2>& monsters , const array<Villager , 7>& villagers , const array<unique_ptr<Hero> , 2>& heros) noexcept
+{
+    cout << "+-----------------------------------------------------------+-------------------------------------------------------+" << '\n'
+         << "|                                                           |                                                       |" << '\n'
+         << "|                   Terror Level: [" << levelOfHorror << "]                       |                  Heros Information                    |" << '\n'
+         << "|                                                           |    -----------------------------------------------    |" << '\n'
+         << "|                                                           | 1)Hero: " << left << setw(18) << heros[0]->heroNameToString(heros[0]->getName()) << "* 2)Hero: " << setw(18) << heros[1]->heroNameToString(heros[1]->getName()) << "|" << '\n'
+         << "|  CAVE======CAMP    INN    PRECINCT     BARN      DUNGEON  |   Actions left: " << heros[0]->getActionsLeft() << '/' << heros[0]->getActions() << "       *  Actions left: " << heros[1]->getActionsLeft() << '/' << heros[1]->getActions() << "        |" << '\n'
+         << "|              |      |        |          |           |     |   Items:                  *  Items:                   |" << '\n';
+
+    array <string , 12> restMap = {
+        "|              ========================THEATRE======TOWER   |    ",
+        "|              |                          |           |     |    ",
+        "|  ABBEY====MANSION======================SHOP       DOCKS   |    ",
+        "|    |               |         |          |                 |    ",
+        "|  CRYPT          MUSEUM       |    LABORATORY====INSTITUTE |    ",
+        "|                              |                            |    ",
+        "|              HOSPITAL=====CHURCH=====GRAVEYARD            |    ",
+        "|                                                           |    ",
+        "+-----------------------------------------------------------+-------------------------------------------------------+",
+        "|                      ACTION MENU                          |                        VILLAGERS                      |",
+        "|   [M]ove  |   [G]uide |   [P]ick Up   |   [A]dvance       |    ",
+        "|   [D]efeat    |   [U]se Perk  |   [H]elp  |   [Q]uit      |    "
+    };
+
+    size_t i = 0;
+    vector<string> items1 = heros[0]->getItems();
+    vector<string> items2 = heros[1]->getItems();
+    for (size_t j = 0 ; j < items1.size() || j < items2.size() ; ++j)
+    {
+        if (i > 7)
+        {
+            cout << restMap[7] << setw(23) << (j < items1.size() ? items1[j] : " ") << '*' << "   " << setw(24) << (j < items2.size() ? items2[j] : " ") << "|\n";
+        }
+        else
+        {
+            cout << restMap[i++] << setw(23) << (j < items1.size() ? items1[j] : " ")  << '*' << "   " << setw(24) << (j < items2.size() ? items2[j] : " ") << "|\n" ;
+        }
+    }
+
+    vector<string> perks1 = heros[0]->getPerks();
+    vector<string> perks2 = heros[1]->getPerks();
+    if (i > 7)
+    {
+        cout << restMap[7].substr(0 , restMap[7].size() - 1) << setw(24) << "Perks:" << setw(28) << "*  Perks:" << "|\n";
+    }
+    else
+    {
+        cout << restMap[i++].substr(0 , restMap[7].size() - 1) << setw(24) << "Perks:" << setw(28) << "*  Perks:" << "|\n";
+    }
+    for (size_t j = 0 ; j < perks1.size() || j < perks2.size() ; ++j)
+    {
+        if (i > 7)
+        {
+            cout << restMap[7] << setw(23) << (j < perks1.size() ? perks1[j] : " ")  << '*' << "   " << setw(24) << (j < perks2.size() ? perks2[j] : " ")  << "|\n";
+        }
+        else
+        {
+            cout << restMap[i++] << setw(23) << (j < perks1.size() ? perks1[j] : " ")  << '*' << "   " << setw(24) << (j < perks2.size() ? perks2[j] : " ")  << "|\n";
+        }
+    }
+
+    for (; i < 8 ; ++i)
+    {
+        cout << restMap[i] << "                                                   |\n";
+    }
+
+    cout << restMap[i++] << '\n';
+    cout << restMap[i++] << '\n';
+    cout << restMap[8] << '\n';
+
+    for (auto const& villager : villagers)
+    {
+        if (i > 11)
+        {
+            cout << restMap[7] << left << setw(16) << (villagerNameToString(villager.getName()) + ": ") << setw(35) << locationToString(villager.getSafeLocation()) << "|\n";
+        }
+        else
+        {
+            cout << restMap[i++] << left << setw(16) << (villagerNameToString(villager.getName()) + ": ") << setw(35) << locationToString(villager.getSafeLocation()) << "|\n";
+        }
+    }
+
+    for (; i < 12 ; ++i)
+    {
+        cout << restMap[i] << "                                                   |\n";
+    }
+
+    cout << restMap[8] << '\n';
+
+    cout << " _______________________________ Location Overview ______________________________\n"
+         << "|   Location   Items                  Monsters      Villagers      Heros         |\n"
+         << "|________________________________________________________________________________|\n";
+    printLocationBelongings(items , monsters , villagers , heros , Location::DOCKS);
+    printLocationBelongings(items , monsters , villagers , heros , Location::CAMP);
+    printLocationBelongings(items , monsters , villagers , heros , Location::INN);
+    printLocationBelongings(items , monsters , villagers , heros , Location::MANSION);
+    printLocationBelongings(items , monsters , villagers , heros , Location::ABBEY);
+    printLocationBelongings(items , monsters , villagers , heros , Location::MUSEUM);
+    printLocationBelongings(items , monsters , villagers , heros , Location::THEATRE);
+    printLocationBelongings(items , monsters , villagers , heros , Location::GRAVEYARD);
+    printLocationBelongings(items , monsters , villagers , heros , Location::BARN);
+    printLocationBelongings(items , monsters , villagers , heros , Location::SHOP);
+    printLocationBelongings(items , monsters , villagers , heros , Location::PRECINCT);
+    printLocationBelongings(items , monsters , villagers , heros , Location::INSTITUTE);
+    printLocationBelongings(items , monsters , villagers , heros , Location::LABORATORY);
+    printLocationBelongings(items , monsters , villagers , heros , Location::TOWER);
+    printLocationBelongings(items , monsters , villagers , heros , Location::CAVE);
+    printLocationBelongings(items , monsters , villagers , heros , Location::DUNGEON);
+    printLocationBelongings(items , monsters , villagers , heros , Location::CRYPT);
+    printLocationBelongings(items , monsters , villagers , heros , Location::CHURCH);
+    printLocationBelongings(items , monsters , villagers , heros , Location::HOSPITAL);
+    cout << "|                                                                                |\n"
+         << "|________________________________________________________________________________|\n"
+         << "|   KEY LOCATIONS:                                                               |\n";
+    
+    for (auto const& monster : monsters)
+    {
+        if (monster->getName() == MonsterName::DRACULA)
+        {
+            cout << "|  ";
+            string result = "[ ";
+            auto draculaMat = monster->getMatStatus();
+            for (auto const& part : draculaMat)
+            {
+                if (!part.second)
+                {
+                    result += locationToString(part.first);
+                    result += " ";
+                }
+            }
+            result += "]";
+            cout << left << setw(41) << result << setw(20) << " Coffins smashed:" << " (" << monster->numOfPartsSolved() << setw(14) << "/4)" << "|\n";
+        }
+        else if (monster->getName() == MonsterName::INVISIBLEMAN)
+        {
+            cout << "|  ";
+            string result = "[ ";
+            auto invisibleManMat = monster->getMatStatus();
+            for (auto const& part : invisibleManMat)
+            {
+                if (!part.second)
+                {
+                    result += locationToString(part.first);
+                    result += " ";
+                }
+            }
+            result += "]";
+            cout << left << setw(41) << result << setw(20) << " Evidence collected:" << " (" << monster->numOfPartsSolved() << setw(14) << "/4)" << "|\n";
+        }
+    }
+
+    cout << "|________________________________________________________________________________|" << endl;
+    
+}
+
 string Map::locationToString(Location i_location) noexcept
 {
     switch(i_location)
