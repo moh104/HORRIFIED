@@ -94,6 +94,13 @@ class Game
             unsigned attackIcons{0};
             unsigned powerIcons{0};
         };
+
+        void initMonsterCards();
+        void initMonsters();
+        void initHeros();
+
+    public:
+        Game();
 };
 
 #endif 
