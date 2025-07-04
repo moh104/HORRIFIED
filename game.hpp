@@ -99,6 +99,7 @@ class Game
         void doEvent(MonsterCardName);
         void doMonsterStrikes(const MonsterCard& card);
         DiceResult throwDice(int numberOfDice) const noexcept;
+        void heroPhase();
         int getIntNumber(std::string output) const noexcept;
         void refreshDiscardedItems();
         void initMonsterCards();
