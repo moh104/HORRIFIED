@@ -48,3 +48,293 @@ void Game::initMonsters()
     monsters[0] = make_unique<Dracula>(Location::CRYPT);
     monsters[1] = make_unique<InvisibleMan>(Location::INSTITUTE);
 }
+
+void Game::placeRandomItems(int count)
+{
+    if (count < 0)
+    {
+        throw invalid_argument("The number of new items cannot be negative");
+    }
+
+    if (count > outGameItems)
+    {
+        refreshDiscardedItems();
+        if (count > outGameItems)
+        {
+            throw logic_error("There are not enough items outside the game");
+        }
+    }
+    int numberOfItems = static_cast<int>(items.size());
+    int placed = 0;
+    while (placed < count)
+    {
+        Item& item = items[rand() % numberOfItems];
+        if (item.getItemStatus() == ItemStatus::OUT_GAME)
+        {
+            item.activate();
+            ++placed;
+            --outGameItems;
+        }
+    }
+}
+
+void Game::doEvent(MonsterCardName cardName)
+{
+    switch(cardName)
+    {
+        case MonsterCardName::FORMOFTHEBAT:
+            monsters[0]->setLocation(currentHero->getLocation());
+            break;
+
+        case MonsterCardName::SUNRISE:
+            monsters[0]->setLocation(Location::CRYPT);
+            break;
+
+        case MonsterCardName::THIEF:
+        {
+            Location location = Map::findLocationWithMostItems(items);
+            monsters[1]->setLocation(location);
+            for (auto& item : items)
+            {
+                if (item.getLocation() == location && item.getItemStatus() == ItemStatus::ON_BOARD)
+                {
+                    item.removeItem();
+                }
+            }
+            break;
+        }
+
+        case MonsterCardName::THEDELIVERY:
+            for (auto& villager : villagers)
+            {
+                if (villager.getName() == VillagerName::WILBURANDCHICK)
+                {
+                    villager.setLocation(Location::DOCKS);
+                    villager.activate();
+                    break;
+                }
+            }
+            break;
+
+        case MonsterCardName::FORTUNETELLER:
+            for (auto& villager : villagers)
+            {
+                if (villager.getName() == VillagerName::MALEVA)
+                {
+                    villager.setLocation(Location::CAMP);
+                    villager.activate();
+                    break;
+                }
+            }
+            break;
+
+        case MonsterCardName::FORMEREMPLOYER:
+            for (auto& villager : villagers)
+            {
+                if (villager.getName() == VillagerName::DRCRANLY)
+                {
+                    villager.setLocation(Location::LABORATORY);
+                    villager.activate();
+                    break;
+                }
+            }
+            break;
+
+        case MonsterCardName::HURRIEDASSISTANT:
+            for (auto& villager : villagers)
+            {
+                if (villager.getName() == VillagerName::FRITZ)
+                {
+                    villager.setLocation(Location::TOWER);
+                    villager.activate();
+                    break;
+                }
+            }
+            break;
+
+        case MonsterCardName::THEINNOCENT:
+            for (auto& villager : villagers)
+            {
+                if (villager.getName() == VillagerName::MARIA)
+                {
+                    villager.setLocation(Location::BARN);
+                    villager.activate();
+                    break;
+                }
+            }
+            break;
+
+        case MonsterCardName::EGYPTIANEXPERT:
+            for (auto& villager : villagers)
+            {
+                if (villager.getName() == VillagerName::PROFPEARSON)
+                {
+                    villager.setLocation(Location::CAVE);
+                    villager.activate();
+                    break;
+                }
+            }
+            break;
+
+        case MonsterCardName::THEICHTHYOLOGIST:
+            for (auto& villager : villagers)
+            {
+                if (villager.getName() == VillagerName::DRREAD)
+                {
+                    villager.setLocation(Location::INSTITUTE);
+                    villager.activate();
+                    break;
+                }
+            }
+            break;
+
+        case MonsterCardName::HYPNOTICGAZE:
+        {
+            Location draculaLocation = monsters[0]->getLocation();
+            auto [hero , villager] = Map::findNearestTarget(draculaLocation , villagers , heroes);
+            if (hero)
+            {
+                hero->movement(1 , draculaLocation);
+            }
+            else if (villager)
+            {
+                villager->movement(1 , draculaLocation);
+            }
+            break;
+        }
+
+        case MonsterCardName::ONTHEMOVE:
+            frenzyIndex = 1 - frenzyIndex;
+            for(auto &villager : villagers)
+            {
+                villager.movement(1 , villager.getSafeLocation());
+            }
+            break;
+    }
+}
+
+void Game::doMonsterStrikes(const MonsterCard& card)
+{
+    unsigned invisibleManPowerCount = 0;
+    monsters[1]->clearMarkedVillager();
+    auto order = card.getStrikeOrder();
+
+    for (auto monsterName : order)
+    {
+        Monster* monster = nullptr;
+        if (monsterName == MonsterName::FRENZY)
+        {
+            monster = monsters[frenzyIndex].get();
+        }
+        else
+        {
+            monster = (monsterName == MonsterName::DRACULA ? monsters[0].get() : monsters[1].get());
+        }
+        if (!monster->isActive())
+        {
+            continue;
+        }
+
+        auto [hero , villager] = Map::findNearestTarget(monster->getLocation(), villagers , heroes);
+        Location target = (hero ? hero->getLocation() : villager->getLocation());
+        monster->movement(card.getStrikeMove(), target);
+
+        DiceResult result = throwDice(card.getStrikeDice());
+        if (result.attackIcons > 0)
+        {
+            if (hero && hero->getLocation() == monster->getLocation())
+            {
+                if (monster->attack(hero , nullptr))
+                {
+                    return;
+                }
+            }
+            else if (villager && villager->getLocation() == monster->getLocation())
+            {
+                if (monster->attack(nullptr, villager))
+                {
+                    return;
+                }
+            }
+        }
+
+        if (monster->getName() == MonsterName::INVISIBLEMAN && result.powerIcons > 0)
+        {
+            invisibleManPowerCount += result.powerIcons;
+        }
+        else if (monster->getName() == MonsterName::DRACULA && result.powerIcons > 0)
+        {
+            monster->power(villagers , currentHero);
+        }
+    }
+
+    for (unsigned i = 0 ; i < invisibleManPowerCount ; ++i)
+    {
+        try
+        {
+            monsters[0]->power(villagers , currentHero);
+        }
+        catch (const logic_error& e)
+        {
+            return;
+        }
+    }
+}
+
+Game::DiceResult Game::throwDice(int numberOfDice) const noexcept
+{
+    DiceResult result;
+    for (int i = 0; i < numberOfDice; ++i)
+    {
+        int diceResult = rand() % 6;
+        if(diceResult < 4){}
+        else if(diceResult == 4)
+            ++result.powerIcons;
+        else if(diceResult == 5)
+            ++result.attackIcons;
+    }
+    return result;
+}
+
+int Game::getIntNumber(string output) const noexcept
+{
+    string input;
+    int value;
+    
+
+    while (true)
+    {
+        cout << output;
+        getline(cin , input);
+        try
+        {
+            size_t pos = 0;
+            value = stoi(input , &pos);
+
+            if (pos == input.size())
+            {
+                return value;
+            }
+            else
+            {
+                cout << "Invalid input! Please enter only a integer number without extra characters.\n";
+            }
+        }
+        catch(...)
+        {
+            cout << "Invalid input! Please enter a valid integer number.\n";
+        }
+    }
+}
+
+void Game::refreshDiscardedItems()
+{
+    for (auto& item : items)
+    {
+        if (item.getItemStatus() == ItemStatus::DISCARDED)
+        {
+            item.setItemStatus(ItemStatus::OUT_GAME);
+            ++outGameItems;
+        }
+    }
+}
