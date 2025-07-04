@@ -38,6 +38,13 @@ class MonsterCard
         void setStrikeMove(int i_strikeMove);
         void setStrikeDice(int i_strikeDice);
         void setStrikeOrder(std::vector<MonsterName> order);
+
+        MonsterCardName getName() const noexcept;
+        int getQuantity() const noexcept;
+        int getNewItems() const noexcept;
+        int getStrikeMove()  const noexcept;
+        int getStrikeDice()  const noexcept;
+        const std::vector<MonsterName>& getStrikeOrder() const noexcept;
 };
 
 #endif

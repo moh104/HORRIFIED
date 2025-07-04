@@ -51,3 +51,73 @@ void MonsterCard::setStrikeOrder(std::vector<MonsterName> order)
     }
     strikeOrder = order;
 }
+
+MonsterCardName MonsterCard::getName() const noexcept
+{
+    return name;
+}
+int MonsterCard::getQuantity() const noexcept
+{
+    return quantity;
+}
+int MonsterCard::getNewItems() const noexcept
+{
+    return newItems;
+}
+int MonsterCard::getStrikeMove()  const noexcept
+{
+    return strikeMove;
+}
+int MonsterCard::getStrikeDice()  const noexcept
+{
+    return strikeDice;
+}
+const std::vector<MonsterName>& MonsterCard::getStrikeOrder() const noexcept
+{
+    return strikeOrder;
+}
+
+string monsterCardToString(MonsterCardName card) noexcept
+{
+    switch(card)
+    {
+        case MonsterCardName::FORMOFTHEBAT:      
+            return "FORMOFTHEBAT";
+
+        case MonsterCardName::SUNRISE:       
+            return "SUNRISE";
+
+        case MonsterCardName::THIEF:
+            return "THIEF";
+
+        case MonsterCardName::THEDELIVERY:    
+            return "THEDELIVERY";
+
+        case MonsterCardName::FORTUNETELLER:      
+            return "FORTUNETELLER";
+
+        case MonsterCardName::FORMEREMPLOYER:     
+            return "FORMEREMPLOYER";
+
+        case MonsterCardName::HURRIEDASSISTANT:    
+            return "HURRIEDASSISTANT";
+
+        case MonsterCardName::THEINNOCENT:  
+            return "THEINNOCENT";
+
+        case MonsterCardName::EGYPTIANEXPERT:       
+            return "EGYPTIANEXPERT";
+
+        case MonsterCardName::THEICHTHYOLOGIST:    
+            return "THEICHTHYOLOGIST";
+
+        case MonsterCardName::HYPNOTICGAZE:
+            return "HYPNOTICGAZE";
+
+        case MonsterCardName::ONTHEMOVE:
+            return "ONTHEMOVE";
+
+        default:
+            return "UNKNOWN";
+    }
+}
