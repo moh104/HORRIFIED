@@ -27,6 +27,27 @@ class Hero
 
     public:
         Hero( HeroName name , Location startLocation) noexcept;
+        
+        void setOwner(const std::string& owner);
+        std::string getOwner() const noexcept;
+        HeroName getName() const noexcept;
+        std::string heroNameToString(HeroName name) const noexcept;
+        int getActions() const noexcept;
+        int getActionsLeft() const noexcept;
+        bool receiveAttack() noexcept;
+        Location getLocation() const noexcept;
+        void move(Location newLocation) noexcept;
+        void guide(const std::vector<Villager*>&);
+        void pickUpItem(const std::array<Item* , 35>&);
+        void advanceTask(Monster*);
+        void defeatMonster(Monster*);
+        std::vector<std::string> getItems() const;
+        std::vector<std::string> getPerks() const;
+        void movement(int moveCount , Location target) noexcept;
+        void setLocation(Location);
+        void setActionsLeft(int n);
+        void HavePerkCard( Perk perk );
+        std::vector<Perk> GetPerk();
 
         virtual ~Hero() = default;
 };
